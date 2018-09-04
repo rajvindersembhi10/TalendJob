@@ -1,0 +1,2392 @@
+package mdmpoc.test_addressvalidationjob_0_1;
+
+import routines.DataOperation;
+import routines.TalendDataGenerator;
+import routines.DataQuality;
+import routines.Relational;
+import routines.DataQualityDependencies;
+import routines.Mathematical;
+import routines.SQLike;
+import routines.Numeric;
+import routines.TalendStringUtil;
+import routines.TalendString;
+import routines.DQTechnical;
+import routines.MDM;
+import routines.StringHandling;
+import routines.DataMasking;
+import routines.TalendDate;
+import routines.DqStringHandling;
+import routines.system.*;
+import routines.system.api.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.List;
+import java.math.BigDecimal;
+import java.io.ByteArrayOutputStream;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.IOException;
+import java.util.Comparator;
+
+@SuppressWarnings("unused")
+/**
+ * Job: Test_AddressValidationJob Purpose: test data address verification<br>
+ * Description: tAddressRowCloud component testing <br>
+ * @author Sembhi, Rajvinder
+ * @version 6.5.1.20180116_1512
+ * @status 
+ */
+public class Test_AddressValidationJob implements TalendJob {
+	static {
+		System.setProperty("TalendJob.log", "Test_AddressValidationJob.log");
+	}
+	private static org.apache.log4j.Logger log = org.apache.log4j.Logger
+			.getLogger(Test_AddressValidationJob.class);
+
+	public final Object obj = new Object();
+
+	// for transmiting parameters purpose
+	private Object valueObject = null;
+
+	public Object getValueObject() {
+		return this.valueObject;
+	}
+
+	public void setValueObject(Object valueObject) {
+		this.valueObject = valueObject;
+	}
+
+	private final static String defaultCharset = java.nio.charset.Charset
+			.defaultCharset().name();
+
+	private final static String utf8Charset = "UTF-8";
+
+	// contains type for every context property
+	public class PropertiesWithType extends java.util.Properties {
+		private static final long serialVersionUID = 1L;
+		private java.util.Map<String, String> propertyTypes = new java.util.HashMap<>();
+
+		public PropertiesWithType(java.util.Properties properties) {
+			super(properties);
+		}
+
+		public PropertiesWithType() {
+			super();
+		}
+
+		public void setContextType(String key, String type) {
+			propertyTypes.put(key, type);
+		}
+
+		public String getContextType(String key) {
+			return propertyTypes.get(key);
+		}
+	}
+
+	// create and load default properties
+	private java.util.Properties defaultProps = new java.util.Properties();
+
+	// create application properties with default
+	public class ContextProperties extends PropertiesWithType {
+
+		private static final long serialVersionUID = 1L;
+
+		public ContextProperties(java.util.Properties properties) {
+			super(properties);
+		}
+
+		public ContextProperties() {
+			super();
+		}
+
+		public void synchronizeContext() {
+
+		}
+
+	}
+
+	private ContextProperties context = new ContextProperties();
+
+	public ContextProperties getContext() {
+		return this.context;
+	}
+
+	private final String jobVersion = "0.1";
+	private final String jobName = "Test_AddressValidationJob";
+	private final String projectName = "MDMPOC";
+	public Integer errorCode = null;
+	private String currentComponent = "";
+
+	private final java.util.Map<String, Object> globalMap = new java.util.HashMap<String, Object>();
+	private final static java.util.Map<String, Object> junitGlobalMap = new java.util.HashMap<String, Object>();
+
+	private final java.util.Map<String, Long> start_Hash = new java.util.HashMap<String, Long>();
+	private final java.util.Map<String, Long> end_Hash = new java.util.HashMap<String, Long>();
+	private final java.util.Map<String, Boolean> ok_Hash = new java.util.HashMap<String, Boolean>();
+	public final java.util.List<String[]> globalBuffer = new java.util.ArrayList<String[]>();
+
+	private RunStat runStat = new RunStat();
+
+	// OSGi DataSource
+	private final static String KEY_DB_DATASOURCES = "KEY_DB_DATASOURCES";
+
+	public void setDataSources(
+			java.util.Map<String, javax.sql.DataSource> dataSources) {
+		java.util.Map<String, routines.system.TalendDataSource> talendDataSources = new java.util.HashMap<String, routines.system.TalendDataSource>();
+		for (java.util.Map.Entry<String, javax.sql.DataSource> dataSourceEntry : dataSources
+				.entrySet()) {
+			talendDataSources.put(
+					dataSourceEntry.getKey(),
+					new routines.system.TalendDataSource(dataSourceEntry
+							.getValue()));
+		}
+		globalMap.put(KEY_DB_DATASOURCES, talendDataSources);
+	}
+
+	private final java.io.ByteArrayOutputStream baos = new java.io.ByteArrayOutputStream();
+	private final java.io.PrintStream errorMessagePS = new java.io.PrintStream(
+			new java.io.BufferedOutputStream(baos));
+
+	public String getExceptionStackTrace() {
+		if ("failure".equals(this.getStatus())) {
+			errorMessagePS.flush();
+			return baos.toString();
+		}
+		return null;
+	}
+
+	private Exception exception;
+
+	public Exception getException() {
+		if ("failure".equals(this.getStatus())) {
+			return this.exception;
+		}
+		return null;
+	}
+
+	private class TalendException extends Exception {
+
+		private static final long serialVersionUID = 1L;
+
+		private java.util.Map<String, Object> globalMap = null;
+		private Exception e = null;
+		private String currentComponent = null;
+		private String virtualComponentName = null;
+
+		public void setVirtualComponentName(String virtualComponentName) {
+			this.virtualComponentName = virtualComponentName;
+		}
+
+		private TalendException(Exception e, String errorComponent,
+				final java.util.Map<String, Object> globalMap) {
+			this.currentComponent = errorComponent;
+			this.globalMap = globalMap;
+			this.e = e;
+		}
+
+		public Exception getException() {
+			return this.e;
+		}
+
+		public String getCurrentComponent() {
+			return this.currentComponent;
+		}
+
+		public String getExceptionCauseMessage(Exception e) {
+			Throwable cause = e;
+			String message = null;
+			int i = 10;
+			while (null != cause && 0 < i--) {
+				message = cause.getMessage();
+				if (null == message) {
+					cause = cause.getCause();
+				} else {
+					break;
+				}
+			}
+			if (null == message) {
+				message = e.getClass().getName();
+			}
+			return message;
+		}
+
+		@Override
+		public void printStackTrace() {
+			if (!(e instanceof TalendException || e instanceof TDieException)) {
+				if (virtualComponentName != null
+						&& currentComponent.indexOf(virtualComponentName + "_") == 0) {
+					globalMap.put(virtualComponentName + "_ERROR_MESSAGE",
+							getExceptionCauseMessage(e));
+				}
+				globalMap.put(currentComponent + "_ERROR_MESSAGE",
+						getExceptionCauseMessage(e));
+				System.err.println("Exception in component " + currentComponent
+						+ " (" + jobName + ")");
+			}
+			if (!(e instanceof TDieException)) {
+				if (e instanceof TalendException) {
+					e.printStackTrace();
+				} else {
+					e.printStackTrace();
+					e.printStackTrace(errorMessagePS);
+					Test_AddressValidationJob.this.exception = e;
+				}
+			}
+			if (!(e instanceof TalendException)) {
+				try {
+					for (java.lang.reflect.Method m : this.getClass()
+							.getEnclosingClass().getMethods()) {
+						if (m.getName().compareTo(currentComponent + "_error") == 0) {
+							m.invoke(Test_AddressValidationJob.this,
+									new Object[] { e, currentComponent,
+											globalMap });
+							break;
+						}
+					}
+
+					if (!(e instanceof TDieException)) {
+					}
+				} catch (Exception e) {
+					this.e.printStackTrace();
+				}
+			}
+		}
+	}
+
+	public void tFileInputDelimited_1_error(Exception exception,
+			String errorComponent, final java.util.Map<String, Object> globalMap)
+			throws TalendException {
+
+		end_Hash.put(errorComponent, System.currentTimeMillis());
+
+		status = "failure";
+
+		tFileInputDelimited_1_onSubJobError(exception, errorComponent,
+				globalMap);
+	}
+
+	public void tAddressRowCloud_1_error(Exception exception,
+			String errorComponent, final java.util.Map<String, Object> globalMap)
+			throws TalendException {
+
+		end_Hash.put(errorComponent, System.currentTimeMillis());
+
+		status = "failure";
+
+		tFileInputDelimited_1_onSubJobError(exception, errorComponent,
+				globalMap);
+	}
+
+	public void tLogRow_1_error(Exception exception, String errorComponent,
+			final java.util.Map<String, Object> globalMap)
+			throws TalendException {
+
+		end_Hash.put(errorComponent, System.currentTimeMillis());
+
+		status = "failure";
+
+		tFileInputDelimited_1_onSubJobError(exception, errorComponent,
+				globalMap);
+	}
+
+	public void tFileInputDelimited_1_onSubJobError(Exception exception,
+			String errorComponent, final java.util.Map<String, Object> globalMap)
+			throws TalendException {
+
+		resumeUtil.addLog("SYSTEM_LOG", "NODE:" + errorComponent, "", Thread
+				.currentThread().getId() + "", "FATAL", "",
+				exception.getMessage(),
+				ResumeUtil.getExceptionStackTrace(exception), "");
+
+	}
+
+	public static class row2Struct implements
+			routines.system.IPersistableRow<row2Struct> {
+		final static byte[] commonByteArrayLock_MDMPOC_Test_AddressValidationJob = new byte[0];
+		static byte[] commonByteArray_MDMPOC_Test_AddressValidationJob = new byte[0];
+
+		public String Status;
+
+		public String getStatus() {
+			return this.Status;
+		}
+
+		public String AddressVerificationCode;
+
+		public String getAddressVerificationCode() {
+			return this.AddressVerificationCode;
+		}
+
+		public String VerificationLevel;
+
+		public String getVerificationLevel() {
+			return this.VerificationLevel;
+		}
+
+		public String FormattedAddress;
+
+		public String getFormattedAddress() {
+			return this.FormattedAddress;
+		}
+
+		public String StreetNumber;
+
+		public String getStreetNumber() {
+			return this.StreetNumber;
+		}
+
+		public String Route;
+
+		public String getRoute() {
+			return this.Route;
+		}
+
+		public String Locality;
+
+		public String getLocality() {
+			return this.Locality;
+		}
+
+		public String AdministrationAreaLevel2;
+
+		public String getAdministrationAreaLevel2() {
+			return this.AdministrationAreaLevel2;
+		}
+
+		public String AdministrationAreaLevel1;
+
+		public String getAdministrationAreaLevel1() {
+			return this.AdministrationAreaLevel1;
+		}
+
+		public String PostalCodeLong;
+
+		public String getPostalCodeLong() {
+			return this.PostalCodeLong;
+		}
+
+		public String PostalCodeShort;
+
+		public String getPostalCodeShort() {
+			return this.PostalCodeShort;
+		}
+
+		public String Country;
+
+		public String getCountry() {
+			return this.Country;
+		}
+
+		public String Longitude;
+
+		public String getLongitude() {
+			return this.Longitude;
+		}
+
+		public String Latitude;
+
+		public String getLatitude() {
+			return this.Latitude;
+		}
+
+		private String readString(ObjectInputStream dis) throws IOException {
+			String strReturn = null;
+			int length = 0;
+			length = dis.readInt();
+			if (length == -1) {
+				strReturn = null;
+			} else {
+				if (length > commonByteArray_MDMPOC_Test_AddressValidationJob.length) {
+					if (length < 1024
+							&& commonByteArray_MDMPOC_Test_AddressValidationJob.length == 0) {
+						commonByteArray_MDMPOC_Test_AddressValidationJob = new byte[1024];
+					} else {
+						commonByteArray_MDMPOC_Test_AddressValidationJob = new byte[2 * length];
+					}
+				}
+				dis.readFully(commonByteArray_MDMPOC_Test_AddressValidationJob,
+						0, length);
+				strReturn = new String(
+						commonByteArray_MDMPOC_Test_AddressValidationJob, 0,
+						length, utf8Charset);
+			}
+			return strReturn;
+		}
+
+		private void writeString(String str, ObjectOutputStream dos)
+				throws IOException {
+			if (str == null) {
+				dos.writeInt(-1);
+			} else {
+				byte[] byteArray = str.getBytes(utf8Charset);
+				dos.writeInt(byteArray.length);
+				dos.write(byteArray);
+			}
+		}
+
+		public void readData(ObjectInputStream dis) {
+
+			synchronized (commonByteArrayLock_MDMPOC_Test_AddressValidationJob) {
+
+				try {
+
+					int length = 0;
+
+					this.Status = readString(dis);
+
+					this.AddressVerificationCode = readString(dis);
+
+					this.VerificationLevel = readString(dis);
+
+					this.FormattedAddress = readString(dis);
+
+					this.StreetNumber = readString(dis);
+
+					this.Route = readString(dis);
+
+					this.Locality = readString(dis);
+
+					this.AdministrationAreaLevel2 = readString(dis);
+
+					this.AdministrationAreaLevel1 = readString(dis);
+
+					this.PostalCodeLong = readString(dis);
+
+					this.PostalCodeShort = readString(dis);
+
+					this.Country = readString(dis);
+
+					this.Longitude = readString(dis);
+
+					this.Latitude = readString(dis);
+
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+
+				}
+
+			}
+
+		}
+
+		public void writeData(ObjectOutputStream dos) {
+			try {
+
+				// String
+
+				writeString(this.Status, dos);
+
+				// String
+
+				writeString(this.AddressVerificationCode, dos);
+
+				// String
+
+				writeString(this.VerificationLevel, dos);
+
+				// String
+
+				writeString(this.FormattedAddress, dos);
+
+				// String
+
+				writeString(this.StreetNumber, dos);
+
+				// String
+
+				writeString(this.Route, dos);
+
+				// String
+
+				writeString(this.Locality, dos);
+
+				// String
+
+				writeString(this.AdministrationAreaLevel2, dos);
+
+				// String
+
+				writeString(this.AdministrationAreaLevel1, dos);
+
+				// String
+
+				writeString(this.PostalCodeLong, dos);
+
+				// String
+
+				writeString(this.PostalCodeShort, dos);
+
+				// String
+
+				writeString(this.Country, dos);
+
+				// String
+
+				writeString(this.Longitude, dos);
+
+				// String
+
+				writeString(this.Latitude, dos);
+
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+
+		public String toString() {
+
+			StringBuilder sb = new StringBuilder();
+			sb.append(super.toString());
+			sb.append("[");
+			sb.append("Status=" + Status);
+			sb.append(",AddressVerificationCode=" + AddressVerificationCode);
+			sb.append(",VerificationLevel=" + VerificationLevel);
+			sb.append(",FormattedAddress=" + FormattedAddress);
+			sb.append(",StreetNumber=" + StreetNumber);
+			sb.append(",Route=" + Route);
+			sb.append(",Locality=" + Locality);
+			sb.append(",AdministrationAreaLevel2=" + AdministrationAreaLevel2);
+			sb.append(",AdministrationAreaLevel1=" + AdministrationAreaLevel1);
+			sb.append(",PostalCodeLong=" + PostalCodeLong);
+			sb.append(",PostalCodeShort=" + PostalCodeShort);
+			sb.append(",Country=" + Country);
+			sb.append(",Longitude=" + Longitude);
+			sb.append(",Latitude=" + Latitude);
+			sb.append("]");
+
+			return sb.toString();
+		}
+
+		public String toLogString() {
+			StringBuilder sb = new StringBuilder();
+
+			if (Status == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Status);
+			}
+
+			sb.append("|");
+
+			if (AddressVerificationCode == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(AddressVerificationCode);
+			}
+
+			sb.append("|");
+
+			if (VerificationLevel == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(VerificationLevel);
+			}
+
+			sb.append("|");
+
+			if (FormattedAddress == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(FormattedAddress);
+			}
+
+			sb.append("|");
+
+			if (StreetNumber == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(StreetNumber);
+			}
+
+			sb.append("|");
+
+			if (Route == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Route);
+			}
+
+			sb.append("|");
+
+			if (Locality == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Locality);
+			}
+
+			sb.append("|");
+
+			if (AdministrationAreaLevel2 == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(AdministrationAreaLevel2);
+			}
+
+			sb.append("|");
+
+			if (AdministrationAreaLevel1 == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(AdministrationAreaLevel1);
+			}
+
+			sb.append("|");
+
+			if (PostalCodeLong == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(PostalCodeLong);
+			}
+
+			sb.append("|");
+
+			if (PostalCodeShort == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(PostalCodeShort);
+			}
+
+			sb.append("|");
+
+			if (Country == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Country);
+			}
+
+			sb.append("|");
+
+			if (Longitude == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Longitude);
+			}
+
+			sb.append("|");
+
+			if (Latitude == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Latitude);
+			}
+
+			sb.append("|");
+
+			return sb.toString();
+		}
+
+		/**
+		 * Compare keys
+		 */
+		public int compareTo(row2Struct other) {
+
+			int returnValue = -1;
+
+			return returnValue;
+		}
+
+		private int checkNullsAndCompare(Object object1, Object object2) {
+			int returnValue = 0;
+			if (object1 instanceof Comparable && object2 instanceof Comparable) {
+				returnValue = ((Comparable) object1).compareTo(object2);
+			} else if (object1 != null && object2 != null) {
+				returnValue = compareStrings(object1.toString(),
+						object2.toString());
+			} else if (object1 == null && object2 != null) {
+				returnValue = 1;
+			} else if (object1 != null && object2 == null) {
+				returnValue = -1;
+			} else {
+				returnValue = 0;
+			}
+
+			return returnValue;
+		}
+
+		private int compareStrings(String string1, String string2) {
+			return string1.compareTo(string2);
+		}
+
+	}
+
+	public static class row1Struct implements
+			routines.system.IPersistableRow<row1Struct> {
+		final static byte[] commonByteArrayLock_MDMPOC_Test_AddressValidationJob = new byte[0];
+		static byte[] commonByteArray_MDMPOC_Test_AddressValidationJob = new byte[0];
+
+		public String Address_Line_1;
+
+		public String getAddress_Line_1() {
+			return this.Address_Line_1;
+		}
+
+		public String Address_Line_2;
+
+		public String getAddress_Line_2() {
+			return this.Address_Line_2;
+		}
+
+		public String Address_Line_3;
+
+		public String getAddress_Line_3() {
+			return this.Address_Line_3;
+		}
+
+		public String city;
+
+		public String getCity() {
+			return this.city;
+		}
+
+		public String county;
+
+		public String getCounty() {
+			return this.county;
+		}
+
+		public String country;
+
+		public String getCountry() {
+			return this.country;
+		}
+
+		public String Postcode;
+
+		public String getPostcode() {
+			return this.Postcode;
+		}
+
+		public Integer Contact_number;
+
+		public Integer getContact_number() {
+			return this.Contact_number;
+		}
+
+		private String readString(ObjectInputStream dis) throws IOException {
+			String strReturn = null;
+			int length = 0;
+			length = dis.readInt();
+			if (length == -1) {
+				strReturn = null;
+			} else {
+				if (length > commonByteArray_MDMPOC_Test_AddressValidationJob.length) {
+					if (length < 1024
+							&& commonByteArray_MDMPOC_Test_AddressValidationJob.length == 0) {
+						commonByteArray_MDMPOC_Test_AddressValidationJob = new byte[1024];
+					} else {
+						commonByteArray_MDMPOC_Test_AddressValidationJob = new byte[2 * length];
+					}
+				}
+				dis.readFully(commonByteArray_MDMPOC_Test_AddressValidationJob,
+						0, length);
+				strReturn = new String(
+						commonByteArray_MDMPOC_Test_AddressValidationJob, 0,
+						length, utf8Charset);
+			}
+			return strReturn;
+		}
+
+		private void writeString(String str, ObjectOutputStream dos)
+				throws IOException {
+			if (str == null) {
+				dos.writeInt(-1);
+			} else {
+				byte[] byteArray = str.getBytes(utf8Charset);
+				dos.writeInt(byteArray.length);
+				dos.write(byteArray);
+			}
+		}
+
+		private Integer readInteger(ObjectInputStream dis) throws IOException {
+			Integer intReturn;
+			int length = 0;
+			length = dis.readByte();
+			if (length == -1) {
+				intReturn = null;
+			} else {
+				intReturn = dis.readInt();
+			}
+			return intReturn;
+		}
+
+		private void writeInteger(Integer intNum, ObjectOutputStream dos)
+				throws IOException {
+			if (intNum == null) {
+				dos.writeByte(-1);
+			} else {
+				dos.writeByte(0);
+				dos.writeInt(intNum);
+			}
+		}
+
+		public void readData(ObjectInputStream dis) {
+
+			synchronized (commonByteArrayLock_MDMPOC_Test_AddressValidationJob) {
+
+				try {
+
+					int length = 0;
+
+					this.Address_Line_1 = readString(dis);
+
+					this.Address_Line_2 = readString(dis);
+
+					this.Address_Line_3 = readString(dis);
+
+					this.city = readString(dis);
+
+					this.county = readString(dis);
+
+					this.country = readString(dis);
+
+					this.Postcode = readString(dis);
+
+					this.Contact_number = readInteger(dis);
+
+				} catch (IOException e) {
+					throw new RuntimeException(e);
+
+				}
+
+			}
+
+		}
+
+		public void writeData(ObjectOutputStream dos) {
+			try {
+
+				// String
+
+				writeString(this.Address_Line_1, dos);
+
+				// String
+
+				writeString(this.Address_Line_2, dos);
+
+				// String
+
+				writeString(this.Address_Line_3, dos);
+
+				// String
+
+				writeString(this.city, dos);
+
+				// String
+
+				writeString(this.county, dos);
+
+				// String
+
+				writeString(this.country, dos);
+
+				// String
+
+				writeString(this.Postcode, dos);
+
+				// Integer
+
+				writeInteger(this.Contact_number, dos);
+
+			} catch (IOException e) {
+				throw new RuntimeException(e);
+			}
+
+		}
+
+		public String toString() {
+
+			StringBuilder sb = new StringBuilder();
+			sb.append(super.toString());
+			sb.append("[");
+			sb.append("Address_Line_1=" + Address_Line_1);
+			sb.append(",Address_Line_2=" + Address_Line_2);
+			sb.append(",Address_Line_3=" + Address_Line_3);
+			sb.append(",city=" + city);
+			sb.append(",county=" + county);
+			sb.append(",country=" + country);
+			sb.append(",Postcode=" + Postcode);
+			sb.append(",Contact_number=" + String.valueOf(Contact_number));
+			sb.append("]");
+
+			return sb.toString();
+		}
+
+		public String toLogString() {
+			StringBuilder sb = new StringBuilder();
+
+			if (Address_Line_1 == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Address_Line_1);
+			}
+
+			sb.append("|");
+
+			if (Address_Line_2 == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Address_Line_2);
+			}
+
+			sb.append("|");
+
+			if (Address_Line_3 == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Address_Line_3);
+			}
+
+			sb.append("|");
+
+			if (city == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(city);
+			}
+
+			sb.append("|");
+
+			if (county == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(county);
+			}
+
+			sb.append("|");
+
+			if (country == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(country);
+			}
+
+			sb.append("|");
+
+			if (Postcode == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Postcode);
+			}
+
+			sb.append("|");
+
+			if (Contact_number == null) {
+				sb.append("<null>");
+			} else {
+				sb.append(Contact_number);
+			}
+
+			sb.append("|");
+
+			return sb.toString();
+		}
+
+		/**
+		 * Compare keys
+		 */
+		public int compareTo(row1Struct other) {
+
+			int returnValue = -1;
+
+			return returnValue;
+		}
+
+		private int checkNullsAndCompare(Object object1, Object object2) {
+			int returnValue = 0;
+			if (object1 instanceof Comparable && object2 instanceof Comparable) {
+				returnValue = ((Comparable) object1).compareTo(object2);
+			} else if (object1 != null && object2 != null) {
+				returnValue = compareStrings(object1.toString(),
+						object2.toString());
+			} else if (object1 == null && object2 != null) {
+				returnValue = 1;
+			} else if (object1 != null && object2 == null) {
+				returnValue = -1;
+			} else {
+				returnValue = 0;
+			}
+
+			return returnValue;
+		}
+
+		private int compareStrings(String string1, String string2) {
+			return string1.compareTo(string2);
+		}
+
+	}
+
+	public void tFileInputDelimited_1Process(
+			final java.util.Map<String, Object> globalMap)
+			throws TalendException {
+		globalMap.put("tFileInputDelimited_1_SUBPROCESS_STATE", 0);
+
+		final boolean execStat = this.execStat;
+
+		String iterateId = "";
+
+		String currentComponent = "";
+		java.util.Map<String, Object> resourceMap = new java.util.HashMap<String, Object>();
+
+		try {
+
+			String currentMethodName = new java.lang.Exception()
+					.getStackTrace()[0].getMethodName();
+			boolean resumeIt = currentMethodName.equals(resumeEntryMethodName);
+			if (resumeEntryMethodName == null || resumeIt || globalResumeTicket) {// start
+																					// the
+																					// resume
+				globalResumeTicket = true;
+
+				row1Struct row1 = new row1Struct();
+				row2Struct row2 = new row2Struct();
+
+				/**
+				 * [tLogRow_1 begin ] start
+				 */
+
+				ok_Hash.put("tLogRow_1", false);
+				start_Hash.put("tLogRow_1", System.currentTimeMillis());
+
+				currentComponent = "tLogRow_1";
+
+				if (execStat) {
+					if (resourceMap.get("inIterateVComp") == null) {
+
+						runStat.updateStatOnConnection("row2" + iterateId, 0, 0);
+
+					}
+				}
+
+				int tos_count_tLogRow_1 = 0;
+
+				if (log.isDebugEnabled())
+					log.debug("tLogRow_1 - " + ("Start to work."));
+				class BytesLimit65535_tLogRow_1 {
+					public void limitLog4jByte() throws Exception {
+
+						StringBuilder log4jParamters_tLogRow_1 = new StringBuilder();
+						log4jParamters_tLogRow_1.append("Parameters:");
+						log4jParamters_tLogRow_1.append("BASIC_MODE" + " = "
+								+ "true");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("TABLE_PRINT" + " = "
+								+ "false");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("VERTICAL" + " = "
+								+ "false");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("FIELDSEPARATOR"
+								+ " = " + "\"|\"");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("PRINT_HEADER" + " = "
+								+ "false");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("PRINT_UNIQUE_NAME"
+								+ " = " + "false");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("PRINT_COLNAMES"
+								+ " = " + "false");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1.append("USE_FIXED_LENGTH"
+								+ " = " + "false");
+						log4jParamters_tLogRow_1.append(" | ");
+						log4jParamters_tLogRow_1
+								.append("PRINT_CONTENT_WITH_LOG4J" + " = "
+										+ "true");
+						log4jParamters_tLogRow_1.append(" | ");
+						if (log.isDebugEnabled())
+							log.debug("tLogRow_1 - "
+									+ (log4jParamters_tLogRow_1));
+					}
+				}
+
+				new BytesLimit65535_tLogRow_1().limitLog4jByte();
+
+				// /////////////////////
+
+				final String OUTPUT_FIELD_SEPARATOR_tLogRow_1 = "|";
+				java.io.PrintStream consoleOut_tLogRow_1 = null;
+
+				StringBuilder strBuffer_tLogRow_1 = null;
+				int nb_line_tLogRow_1 = 0;
+				// /////////////////////
+
+				/**
+				 * [tLogRow_1 begin ] stop
+				 */
+
+				/**
+				 * [tAddressRowCloud_1 begin ] start
+				 */
+
+				ok_Hash.put("tAddressRowCloud_1", false);
+				start_Hash
+						.put("tAddressRowCloud_1", System.currentTimeMillis());
+
+				currentComponent = "tAddressRowCloud_1";
+
+				if (execStat) {
+					if (resourceMap.get("inIterateVComp") == null) {
+
+						runStat.updateStatOnConnection("row1" + iterateId, 0, 0);
+
+					}
+				}
+
+				int tos_count_tAddressRowCloud_1 = 0;
+
+				if (log.isDebugEnabled())
+					log.debug("tAddressRowCloud_1 - " + ("Start to work."));
+				class BytesLimit65535_tAddressRowCloud_1 {
+					public void limitLog4jByte() throws Exception {
+
+						StringBuilder log4jParamters_tAddressRowCloud_1 = new StringBuilder();
+						log4jParamters_tAddressRowCloud_1.append("Parameters:");
+						log4jParamters_tAddressRowCloud_1.append("API_TYPE"
+								+ " = " + "GOOGLE");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("LICENSE_KEY"
+										+ " = "
+										+ "\"AIzaSyA7MTfpcs4rMO1qkVZ3UXSbBD7WPV6wsKk\"");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("INPUT_ADDRESS" + " = "
+										+ "[{ADDRESS_FIELD="
+										+ ("originalAddress")
+										+ ", INPUT_COLUMN="
+										+ ("Address_Line_1")
+										+ "}, {ADDRESS_FIELD="
+										+ ("originalAddress")
+										+ ", INPUT_COLUMN="
+										+ ("Address_Line_2")
+										+ "}, {ADDRESS_FIELD="
+										+ ("originalAddress")
+										+ ", INPUT_COLUMN="
+										+ ("Address_Line_3")
+										+ "}, {ADDRESS_FIELD="
+										+ ("originalPostalCode")
+										+ ", INPUT_COLUMN=" + ("Postcode")
+										+ "}, {ADDRESS_FIELD="
+										+ ("originalCountry")
+										+ ", INPUT_COLUMN=" + ("country")
+										+ "}]");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("USE_ADDITIONAL_OUTPUT" + " = "
+										+ "true");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("OUTPUT_MAPPING" + " = "
+										+ "[{OUTPUT_COLUMN=" + ("Status")
+										+ ", ADDRESS_FIELD=" + ("RawResponse")
+										+ "}]");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1.append("DIE_ON_ERROR"
+								+ " = " + "false");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("OUTPUT_SCRIPT" + " = " + "DEFAULT");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("QUERY_INTERVAL" + " = " + "100");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1.append("TRIAL_LIMIT"
+								+ " = " + "10");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("TRIAL_INTERVAL" + " = " + "200");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						log4jParamters_tAddressRowCloud_1
+								.append("TERMINATION_WAITING_SECONDS" + " = "
+										+ "5");
+						log4jParamters_tAddressRowCloud_1.append(" | ");
+						if (log.isDebugEnabled())
+							log.debug("tAddressRowCloud_1 - "
+									+ (log4jParamters_tAddressRowCloud_1));
+					}
+				}
+
+				new BytesLimit65535_tAddressRowCloud_1().limitLog4jByte();
+
+				if ("AIzaSyA7MTfpcs4rMO1qkVZ3UXSbBD7WPV6wsKk" == null
+						|| "".equals("AIzaSyA7MTfpcs4rMO1qkVZ3UXSbBD7WPV6wsKk"
+								.trim())) {
+					System.err
+							.println("[ERROR]: Please make sure that the tAddressRowCloud component has been configured with a valid license/API key.");
+					return;
+				}
+
+				System.out.println("[INFO] using " + (false ? "https" : "http")
+						+ " protocol to connect to the " + "GOOGLE"
+						+ " webservice.");
+
+				// fix when use jdk1.7, when select security mode connect for
+				// loqate
+				// get error:javax.net.ssl.SSLProtocolException: handshake
+				// alert: unrecognized_name
+				if (false) {
+					System.setProperty("jsse.enableSNIExtension", "false");
+				}
+
+				org.talend.dataquality.address.api.AddressEngine engine_tAddressRowCloud_1 = new org.talend.dataquality.address.api.AddressEngine(
+						"GOOGLE");
+				if (!"QAS".equals("GOOGLE")) {
+					engine_tAddressRowCloud_1.getEngineConfig().setLicenseKey(
+							"AIzaSyA7MTfpcs4rMO1qkVZ3UXSbBD7WPV6wsKk");
+					engine_tAddressRowCloud_1.getEngineConfig().setSecureMode(
+							false);
+
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setLineSeparator("DEFAULT");
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setDefaultCountry("DEFAULT");
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setForcedCountry("DEFAULT");
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setOutputScript("DEFAULT");
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setMinimumMatchScore("0");
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setMinimumVerificationLevel(0);
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setOutputHandlerTerminationDelay(2000);
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setProcessingMode("v");
+				} else {
+					// for qas
+					String url = "https://ws.ondemand.qas.com/ProOnDemand/V2/ProOnDemandService.asmx";
+					org.talend.qas.QASClientOnDemand qasClient_tAddressRowCloud_1 = new org.talend.qas.QASClientOnDemand(
+							url, "FRX", "", "");
+					engine_tAddressRowCloud_1.getEngineConfig()
+							.setQasClientOnDemand(qasClient_tAddressRowCloud_1);
+				}
+				engine_tAddressRowCloud_1.getEngineConfig().setQueryInterval(
+						100);
+				engine_tAddressRowCloud_1.getEngineConfig().setTrialLimit(10);
+				engine_tAddressRowCloud_1.getEngineConfig().setTrialInterval(
+						200);
+				engine_tAddressRowCloud_1.getEngineConfig()
+						.setTerminationWaitingSeconds(5);
+
+				java.util.Set<String> additionalColumnSet_tAddressRowCloud_1 = new java.util.HashSet<String>();
+				additionalColumnSet_tAddressRowCloud_1.add("RawResponse");
+				engine_tAddressRowCloud_1.getEngineConfig()
+						.setAdditionalOutputColumnSet(
+								additionalColumnSet_tAddressRowCloud_1);
+
+				/**
+				 * [tAddressRowCloud_1 begin ] stop
+				 */
+
+				/**
+				 * [tFileInputDelimited_1 begin ] start
+				 */
+
+				ok_Hash.put("tFileInputDelimited_1", false);
+				start_Hash.put("tFileInputDelimited_1",
+						System.currentTimeMillis());
+
+				currentComponent = "tFileInputDelimited_1";
+
+				int tos_count_tFileInputDelimited_1 = 0;
+
+				if (log.isDebugEnabled())
+					log.debug("tFileInputDelimited_1 - " + ("Start to work."));
+				class BytesLimit65535_tFileInputDelimited_1 {
+					public void limitLog4jByte() throws Exception {
+
+						StringBuilder log4jParamters_tFileInputDelimited_1 = new StringBuilder();
+						log4jParamters_tFileInputDelimited_1
+								.append("Parameters:");
+						log4jParamters_tFileInputDelimited_1
+								.append("FILENAME"
+										+ " = "
+										+ "\"C:/Users/SembhiR/Documents/Work/DataFirst/Test data - Address.csv\"");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("CSV_OPTION" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("ROWSEPARATOR" + " = " + "\"\\n\"");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("FIELDSEPARATOR" + " = " + "\",\"");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1.append("HEADER"
+								+ " = " + "1");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1.append("FOOTER"
+								+ " = " + "0");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1.append("LIMIT"
+								+ " = " + "");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("REMOVE_EMPTY_ROW" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("UNCOMPRESS" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("DIE_ON_ERROR" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("ADVANCED_SEPARATOR" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1.append("RANDOM"
+								+ " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1.append("TRIMALL"
+								+ " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("TRIMSELECT" + " = " + "[{TRIM="
+										+ ("false") + ", SCHEMA_COLUMN="
+										+ ("Address_Line_1") + "}, {TRIM="
+										+ ("false") + ", SCHEMA_COLUMN="
+										+ ("Address_Line_2") + "}, {TRIM="
+										+ ("false") + ", SCHEMA_COLUMN="
+										+ ("Address_Line_3") + "}, {TRIM="
+										+ ("false") + ", SCHEMA_COLUMN="
+										+ ("city") + "}, {TRIM=" + ("false")
+										+ ", SCHEMA_COLUMN=" + ("county")
+										+ "}, {TRIM=" + ("false")
+										+ ", SCHEMA_COLUMN=" + ("country")
+										+ "}, {TRIM=" + ("false")
+										+ ", SCHEMA_COLUMN=" + ("Postcode")
+										+ "}, {TRIM=" + ("false")
+										+ ", SCHEMA_COLUMN="
+										+ ("Contact_number") + "}]");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("CHECK_FIELDS_NUM" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("CHECK_DATE" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1.append("ENCODING"
+								+ " = " + "\"US-ASCII\"");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("SPLITRECORD" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						log4jParamters_tFileInputDelimited_1
+								.append("ENABLE_DECODE" + " = " + "false");
+						log4jParamters_tFileInputDelimited_1.append(" | ");
+						if (log.isDebugEnabled())
+							log.debug("tFileInputDelimited_1 - "
+									+ (log4jParamters_tFileInputDelimited_1));
+					}
+				}
+
+				new BytesLimit65535_tFileInputDelimited_1().limitLog4jByte();
+
+				final routines.system.RowState rowstate_tFileInputDelimited_1 = new routines.system.RowState();
+
+				int nb_line_tFileInputDelimited_1 = 0;
+				org.talend.fileprocess.FileInputDelimited fid_tFileInputDelimited_1 = null;
+				try {
+
+					Object filename_tFileInputDelimited_1 = "C:/Users/SembhiR/Documents/Work/DataFirst/Test data - Address.csv";
+					if (filename_tFileInputDelimited_1 instanceof java.io.InputStream) {
+
+						int footer_value_tFileInputDelimited_1 = 0, random_value_tFileInputDelimited_1 = -1;
+						if (footer_value_tFileInputDelimited_1 > 0
+								|| random_value_tFileInputDelimited_1 > 0) {
+							throw new java.lang.Exception(
+									"When the input source is a stream,footer and random shouldn't be bigger than 0.");
+						}
+
+					}
+					try {
+						fid_tFileInputDelimited_1 = new org.talend.fileprocess.FileInputDelimited(
+								"C:/Users/SembhiR/Documents/Work/DataFirst/Test data - Address.csv",
+								"US-ASCII", ",", "\n", false, 1, 0, -1, -1,
+								false);
+					} catch (java.lang.Exception e) {
+
+						log.error("tFileInputDelimited_1 - " + e.getMessage());
+
+						System.err.println(e.getMessage());
+
+					}
+
+					log.info("tFileInputDelimited_1 - Retrieving records from the datasource.");
+
+					while (fid_tFileInputDelimited_1 != null
+							&& fid_tFileInputDelimited_1.nextRecord()) {
+						rowstate_tFileInputDelimited_1.reset();
+
+						row1 = null;
+
+						boolean whetherReject_tFileInputDelimited_1 = false;
+						row1 = new row1Struct();
+						try {
+
+							int columnIndexWithD_tFileInputDelimited_1 = 0;
+
+							String temp = "";
+
+							columnIndexWithD_tFileInputDelimited_1 = 0;
+
+							row1.Address_Line_1 = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 1;
+
+							row1.Address_Line_2 = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 2;
+
+							row1.Address_Line_3 = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 3;
+
+							row1.city = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 4;
+
+							row1.county = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 5;
+
+							row1.country = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 6;
+
+							row1.Postcode = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+
+							columnIndexWithD_tFileInputDelimited_1 = 7;
+
+							temp = fid_tFileInputDelimited_1
+									.get(columnIndexWithD_tFileInputDelimited_1);
+							if (temp.length() > 0) {
+
+								try {
+
+									row1.Contact_number = ParserUtils
+											.parseTo_Integer(temp);
+
+								} catch (java.lang.Exception ex_tFileInputDelimited_1) {
+									rowstate_tFileInputDelimited_1
+											.setException(ex_tFileInputDelimited_1);
+								}
+
+							} else {
+
+								row1.Contact_number = null;
+
+							}
+
+							if (rowstate_tFileInputDelimited_1.getException() != null) {
+								throw rowstate_tFileInputDelimited_1
+										.getException();
+							}
+
+						} catch (java.lang.Exception e) {
+							whetherReject_tFileInputDelimited_1 = true;
+
+							log.error("tFileInputDelimited_1 - "
+									+ e.getMessage());
+
+							System.err.println(e.getMessage());
+							row1 = null;
+
+						}
+
+						log.debug("tFileInputDelimited_1 - Retrieving the record "
+								+ fid_tFileInputDelimited_1.getRowNumber()
+								+ ".");
+
+						/**
+						 * [tFileInputDelimited_1 begin ] stop
+						 */
+
+						/**
+						 * [tFileInputDelimited_1 main ] start
+						 */
+
+						currentComponent = "tFileInputDelimited_1";
+
+						tos_count_tFileInputDelimited_1++;
+
+						/**
+						 * [tFileInputDelimited_1 main ] stop
+						 */
+						// Start of branch "row1"
+						if (row1 != null) {
+
+							/**
+							 * [tAddressRowCloud_1 main ] start
+							 */
+
+							currentComponent = "tAddressRowCloud_1";
+
+							// row1
+							// row1
+
+							if (execStat) {
+								runStat.updateStatOnConnection("row1"
+										+ iterateId, 1, 1);
+							}
+
+							if (log.isTraceEnabled()) {
+								log.trace("row1 - "
+										+ (row1 == null ? "" : row1
+												.toLogString()));
+							}
+
+							org.talend.dataquality.address.api.AddressObject addressObj = new org.talend.dataquality.address.api.AddressObject(
+									"");
+							boolean hasError_tAddressRowCloud_1 = false;
+							if (row1.Address_Line_1 != null
+									&& !"".equals(row1.Address_Line_1.trim())) {
+								addressObj
+										.setOriginalAddress(row1.Address_Line_1
+												.trim());
+							}
+							if (row1.Address_Line_2 != null
+									&& !"".equals(row1.Address_Line_2.trim())) {
+								addressObj
+										.setOriginalAddress(row1.Address_Line_2
+												.trim());
+							}
+							if (row1.Address_Line_3 != null
+									&& !"".equals(row1.Address_Line_3.trim())) {
+								addressObj
+										.setOriginalAddress(row1.Address_Line_3
+												.trim());
+							}
+							if (row1.Postcode != null
+									&& !"".equals(row1.Postcode.trim())) {
+								addressObj.setOriginalPostalCode(row1.Postcode
+										.trim());
+							}
+							if (row1.country != null
+									&& !"".equals(row1.country.trim())) {
+								addressObj.setOriginalCountry(row1.country
+										.trim());
+							}
+							// for google and qas provider,we set address as
+							// format
+							// "Address, Locality, Administrative, PostalCode, Country"
+							java.util.ArrayList<String> addressList = new java.util.ArrayList<String>();
+							addressList.add(addressObj.getOriginalAddress());
+							addressList.add(addressObj.getOriginalLocality());
+							addressList.add(addressObj.getOriginalAdminiArea());
+							addressList.add(addressObj.getOriginalPostalCode());
+							addressList.add(addressObj.getOriginalCountry());
+							java.util.Collection<String> nullCon = new java.util.Vector<String>();
+							nullCon.add(null);
+							addressList.removeAll(nullCon);
+							addressObj
+									.setOriginalAddress(org.apache.commons.lang.StringUtils
+											.join(addressList, ", "));
+							org.talend.dataquality.address.api.AddressObject result_tAddressRowCloud_1 = null;
+							try {
+								// normalize Address
+								engine_tAddressRowCloud_1
+										.normalizeAddress(addressObj);
+
+								// get result
+								result_tAddressRowCloud_1 = engine_tAddressRowCloud_1
+										.getHeadAddressObject();
+							} catch (Exception e) {
+								// if die on error,stop the job and throw an
+								// error.
+								if (false) {
+									throw new Exception(e.getMessage());
+								} else {
+									hasError_tAddressRowCloud_1 = true;
+									log.error(e.getMessage());
+
+								}
+							}
+							if (!hasError_tAddressRowCloud_1) {
+								if (row2 == null) {
+									row2 = new row2Struct();
+								}
+								// set the output result
+								row2.Status = result_tAddressRowCloud_1
+										.getStatus();
+								row2.AddressVerificationCode = result_tAddressRowCloud_1
+										.getAddressVerificationCode();
+								row2.VerificationLevel = result_tAddressRowCloud_1
+										.getVerificationLevel();
+								row2.FormattedAddress = result_tAddressRowCloud_1
+										.getFormattedAddress();
+								row2.StreetNumber = result_tAddressRowCloud_1
+										.getStreetNumber();
+								row2.Route = result_tAddressRowCloud_1
+										.getRoute();
+								row2.Locality = result_tAddressRowCloud_1
+										.getLocality();
+								row2.AdministrationAreaLevel1 = result_tAddressRowCloud_1
+										.getAdministrationAreaLevel1();
+								row2.AdministrationAreaLevel2 = result_tAddressRowCloud_1
+										.getAdministrationAreaLevel2();
+								row2.Country = result_tAddressRowCloud_1
+										.getCountry();
+								row2.PostalCodeLong = result_tAddressRowCloud_1
+										.getPostalCodeLong();
+								row2.PostalCodeShort = result_tAddressRowCloud_1
+										.getPostalCodeShort();
+								row2.Longitude = result_tAddressRowCloud_1
+										.getLongitude();
+								row2.Latitude = result_tAddressRowCloud_1
+										.getLatitude();
+								row2.Status = result_tAddressRowCloud_1
+										.getResultColumn("RawResponse");
+							} else {// go to REJECT Flow
+								row2 = null;
+							}
+
+							tos_count_tAddressRowCloud_1++;
+
+							/**
+							 * [tAddressRowCloud_1 main ] stop
+							 */
+							// Start of branch "row2"
+							if (row2 != null) {
+
+								/**
+								 * [tLogRow_1 main ] start
+								 */
+
+								currentComponent = "tLogRow_1";
+
+								// row2
+								// row2
+
+								if (execStat) {
+									runStat.updateStatOnConnection("row2"
+											+ iterateId, 1, 1);
+								}
+
+								if (log.isTraceEnabled()) {
+									log.trace("row2 - "
+											+ (row2 == null ? "" : row2
+													.toLogString()));
+								}
+
+								// /////////////////////
+
+								strBuffer_tLogRow_1 = new StringBuilder();
+
+								if (row2.Status != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.Status));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.AddressVerificationCode != null) { //
+
+									strBuffer_tLogRow_1
+											.append(String
+													.valueOf(row2.AddressVerificationCode));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.VerificationLevel != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.VerificationLevel));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.FormattedAddress != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.FormattedAddress));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.StreetNumber != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.StreetNumber));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.Route != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.Route));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.Locality != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.Locality));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.AdministrationAreaLevel2 != null) { //
+
+									strBuffer_tLogRow_1
+											.append(String
+													.valueOf(row2.AdministrationAreaLevel2));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.AdministrationAreaLevel1 != null) { //
+
+									strBuffer_tLogRow_1
+											.append(String
+													.valueOf(row2.AdministrationAreaLevel1));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.PostalCodeLong != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.PostalCodeLong));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.PostalCodeShort != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.PostalCodeShort));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.Country != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.Country));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.Longitude != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.Longitude));
+
+								} //
+
+								strBuffer_tLogRow_1.append("|");
+
+								if (row2.Latitude != null) { //
+
+									strBuffer_tLogRow_1.append(String
+											.valueOf(row2.Latitude));
+
+								} //
+
+								if (globalMap.get("tLogRow_CONSOLE") != null) {
+									consoleOut_tLogRow_1 = (java.io.PrintStream) globalMap
+											.get("tLogRow_CONSOLE");
+								} else {
+									consoleOut_tLogRow_1 = new java.io.PrintStream(
+											new java.io.BufferedOutputStream(
+													System.out));
+									globalMap.put("tLogRow_CONSOLE",
+											consoleOut_tLogRow_1);
+								}
+								log.info("tLogRow_1 - Content of row "
+										+ (nb_line_tLogRow_1 + 1) + ": "
+										+ strBuffer_tLogRow_1.toString());
+								consoleOut_tLogRow_1
+										.println(strBuffer_tLogRow_1.toString());
+								consoleOut_tLogRow_1.flush();
+								nb_line_tLogRow_1++;
+								// ////
+
+								// ////
+
+								// /////////////////////
+
+								tos_count_tLogRow_1++;
+
+								/**
+								 * [tLogRow_1 main ] stop
+								 */
+
+							} // End of branch "row2"
+
+						} // End of branch "row1"
+
+						/**
+						 * [tFileInputDelimited_1 end ] start
+						 */
+
+						currentComponent = "tFileInputDelimited_1";
+
+					}
+				} finally {
+					if (!((Object) ("C:/Users/SembhiR/Documents/Work/DataFirst/Test data - Address.csv") instanceof java.io.InputStream)) {
+						if (fid_tFileInputDelimited_1 != null) {
+							fid_tFileInputDelimited_1.close();
+						}
+					}
+					if (fid_tFileInputDelimited_1 != null) {
+						globalMap.put("tFileInputDelimited_1_NB_LINE",
+								fid_tFileInputDelimited_1.getRowNumber());
+
+						log.info("tFileInputDelimited_1 - Retrieved records count: "
+								+ fid_tFileInputDelimited_1.getRowNumber()
+								+ ".");
+
+					}
+				}
+
+				if (log.isDebugEnabled())
+					log.debug("tFileInputDelimited_1 - " + ("Done."));
+
+				ok_Hash.put("tFileInputDelimited_1", true);
+				end_Hash.put("tFileInputDelimited_1",
+						System.currentTimeMillis());
+
+				/**
+				 * [tFileInputDelimited_1 end ] stop
+				 */
+
+				/**
+				 * [tAddressRowCloud_1 end ] start
+				 */
+
+				currentComponent = "tAddressRowCloud_1";
+
+				try {
+					// stop accepting new queries into the thread pool and wait
+					// until
+					// all the tasks are terminated.
+					engine_tAddressRowCloud_1.shutdown();
+				} catch (org.talend.dataquality.address.api.AddressApiException e) {
+					e.printStackTrace();
+				}
+				if (execStat) {
+					if (resourceMap.get("inIterateVComp") == null
+							|| !((Boolean) resourceMap.get("inIterateVComp"))) {
+						runStat.updateStatOnConnection("row1" + iterateId, 2, 0);
+					}
+				}
+
+				if (log.isDebugEnabled())
+					log.debug("tAddressRowCloud_1 - " + ("Done."));
+
+				ok_Hash.put("tAddressRowCloud_1", true);
+				end_Hash.put("tAddressRowCloud_1", System.currentTimeMillis());
+
+				/**
+				 * [tAddressRowCloud_1 end ] stop
+				 */
+
+				/**
+				 * [tLogRow_1 end ] start
+				 */
+
+				currentComponent = "tLogRow_1";
+
+				// ////
+				// ////
+				globalMap.put("tLogRow_1_NB_LINE", nb_line_tLogRow_1);
+				if (log.isInfoEnabled())
+					log.info("tLogRow_1 - " + ("Printed row count: ")
+							+ (nb_line_tLogRow_1) + ("."));
+
+				// /////////////////////
+
+				if (execStat) {
+					if (resourceMap.get("inIterateVComp") == null
+							|| !((Boolean) resourceMap.get("inIterateVComp"))) {
+						runStat.updateStatOnConnection("row2" + iterateId, 2, 0);
+					}
+				}
+
+				if (log.isDebugEnabled())
+					log.debug("tLogRow_1 - " + ("Done."));
+
+				ok_Hash.put("tLogRow_1", true);
+				end_Hash.put("tLogRow_1", System.currentTimeMillis());
+
+				/**
+				 * [tLogRow_1 end ] stop
+				 */
+
+			}// end the resume
+
+		} catch (java.lang.Exception e) {
+
+			if (!(e instanceof TalendException)) {
+				log.fatal(currentComponent + " " + e.getMessage(), e);
+			}
+
+			TalendException te = new TalendException(e, currentComponent,
+					globalMap);
+
+			throw te;
+		} catch (java.lang.Error error) {
+
+			runStat.stopThreadStat();
+
+			throw error;
+		} finally {
+
+			try {
+
+				/**
+				 * [tFileInputDelimited_1 finally ] start
+				 */
+
+				currentComponent = "tFileInputDelimited_1";
+
+				/**
+				 * [tFileInputDelimited_1 finally ] stop
+				 */
+
+				/**
+				 * [tAddressRowCloud_1 finally ] start
+				 */
+
+				currentComponent = "tAddressRowCloud_1";
+
+				/**
+				 * [tAddressRowCloud_1 finally ] stop
+				 */
+
+				/**
+				 * [tLogRow_1 finally ] start
+				 */
+
+				currentComponent = "tLogRow_1";
+
+				/**
+				 * [tLogRow_1 finally ] stop
+				 */
+
+			} catch (java.lang.Exception e) {
+				// ignore
+			} catch (java.lang.Error error) {
+				// ignore
+			}
+			resourceMap = null;
+		}
+
+		globalMap.put("tFileInputDelimited_1_SUBPROCESS_STATE", 1);
+	}
+
+	public String resuming_logs_dir_path = null;
+	public String resuming_checkpoint_path = null;
+	public String parent_part_launcher = null;
+	private String resumeEntryMethodName = null;
+	private boolean globalResumeTicket = false;
+
+	public boolean watch = false;
+	// portStats is null, it means don't execute the statistics
+	public Integer portStats = null;
+	public int portTraces = 4334;
+	public String clientHost;
+	public String defaultClientHost = "localhost";
+	public String contextStr = "Default";
+	public boolean isDefaultContext = true;
+	public String pid = "0";
+	public String rootPid = null;
+	public String fatherPid = null;
+	public String fatherNode = null;
+	public long startTime = 0;
+	public boolean isChildJob = false;
+	public String log4jLevel = "";
+
+	private boolean execStat = true;
+
+	private ThreadLocal<java.util.Map<String, String>> threadLocal = new ThreadLocal<java.util.Map<String, String>>() {
+		protected java.util.Map<String, String> initialValue() {
+			java.util.Map<String, String> threadRunResultMap = new java.util.HashMap<String, String>();
+			threadRunResultMap.put("errorCode", null);
+			threadRunResultMap.put("status", "");
+			return threadRunResultMap;
+		};
+	};
+
+	private PropertiesWithType context_param = new PropertiesWithType();
+	public java.util.Map<String, Object> parentContextMap = new java.util.HashMap<String, Object>();
+
+	public String status = "";
+
+	public static void main(String[] args) {
+		final Test_AddressValidationJob Test_AddressValidationJobClass = new Test_AddressValidationJob();
+
+		int exitCode = Test_AddressValidationJobClass.runJobInTOS(args);
+		if (exitCode == 0) {
+			log.info("TalendJob: 'Test_AddressValidationJob' - Done.");
+		}
+
+		System.exit(exitCode);
+	}
+
+	public String[][] runJob(String[] args) {
+
+		int exitCode = runJobInTOS(args);
+		String[][] bufferValue = new String[][] { { Integer.toString(exitCode) } };
+
+		return bufferValue;
+	}
+
+	public boolean hastBufferOutputComponent() {
+		boolean hastBufferOutput = false;
+
+		return hastBufferOutput;
+	}
+
+	public int runJobInTOS(String[] args) {
+		// reset status
+		status = "";
+
+		String lastStr = "";
+		for (String arg : args) {
+			if (arg.equalsIgnoreCase("--context_param")) {
+				lastStr = arg;
+			} else if (lastStr.equals("")) {
+				evalParam(arg);
+			} else {
+				evalParam(lastStr + " " + arg);
+				lastStr = "";
+			}
+		}
+
+		if (!"".equals(log4jLevel)) {
+			if ("trace".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.TRACE);
+			} else if ("debug".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.DEBUG);
+			} else if ("info".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.INFO);
+			} else if ("warn".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.WARN);
+			} else if ("error".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.ERROR);
+			} else if ("fatal".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.FATAL);
+			} else if ("off".equalsIgnoreCase(log4jLevel)) {
+				log.setLevel(org.apache.log4j.Level.OFF);
+			}
+			org.apache.log4j.Logger.getRootLogger().setLevel(log.getLevel());
+		}
+		log.info("TalendJob: 'Test_AddressValidationJob' - Start.");
+
+		if (clientHost == null) {
+			clientHost = defaultClientHost;
+		}
+
+		if (pid == null || "0".equals(pid)) {
+			pid = TalendString.getAsciiRandomString(6);
+		}
+
+		if (rootPid == null) {
+			rootPid = pid;
+		}
+		if (fatherPid == null) {
+			fatherPid = pid;
+		} else {
+			isChildJob = true;
+		}
+
+		if (portStats != null) {
+			// portStats = -1; //for testing
+			if (portStats < 0 || portStats > 65535) {
+				// issue:10869, the portStats is invalid, so this client socket
+				// can't open
+				System.err.println("The statistics socket port " + portStats
+						+ " is invalid.");
+				execStat = false;
+			}
+		} else {
+			execStat = false;
+		}
+
+		try {
+			// call job/subjob with an existing context, like:
+			// --context=production. if without this parameter, there will use
+			// the default context instead.
+			java.io.InputStream inContext = Test_AddressValidationJob.class
+					.getClassLoader().getResourceAsStream(
+							"mdmpoc/test_addressvalidationjob_0_1/contexts/"
+									+ contextStr + ".properties");
+			if (isDefaultContext && inContext == null) {
+
+			} else {
+				if (inContext != null) {
+					// defaultProps is in order to keep the original context
+					// value
+					defaultProps.load(inContext);
+					inContext.close();
+					context = new ContextProperties(defaultProps);
+				} else {
+					// print info and job continue to run, for case:
+					// context_param is not empty.
+					System.err.println("Could not find the context "
+							+ contextStr);
+				}
+			}
+
+			if (!context_param.isEmpty()) {
+				context.putAll(context_param);
+				// set types for params from parentJobs
+				for (Object key : context_param.keySet()) {
+					String context_key = key.toString();
+					String context_type = context_param
+							.getContextType(context_key);
+					context.setContextType(context_key, context_type);
+
+				}
+			}
+		} catch (java.io.IOException ie) {
+			System.err.println("Could not load context " + contextStr);
+			ie.printStackTrace();
+		}
+
+		// get context value from parent directly
+		if (parentContextMap != null && !parentContextMap.isEmpty()) {
+		}
+
+		// Resume: init the resumeUtil
+		resumeEntryMethodName = ResumeUtil
+				.getResumeEntryMethodName(resuming_checkpoint_path);
+		resumeUtil = new ResumeUtil(resuming_logs_dir_path, isChildJob, rootPid);
+		resumeUtil.initCommonInfo(pid, rootPid, fatherPid, projectName,
+				jobName, contextStr, jobVersion);
+
+		List<String> parametersToEncrypt = new java.util.ArrayList<String>();
+		// Resume: jobStart
+		resumeUtil.addLog("JOB_STARTED", "JOB:" + jobName,
+				parent_part_launcher, Thread.currentThread().getId() + "", "",
+				"", "", "",
+				resumeUtil.convertToJsonText(context, parametersToEncrypt));
+
+		if (execStat) {
+			try {
+				runStat.openSocket(!isChildJob);
+				runStat.setAllPID(rootPid, fatherPid, pid, jobName);
+				runStat.startThreadStat(clientHost, portStats);
+				runStat.updateStatOnJob(RunStat.JOBSTART, fatherNode);
+			} catch (java.io.IOException ioException) {
+				ioException.printStackTrace();
+			}
+		}
+
+		java.util.concurrent.ConcurrentHashMap<Object, Object> concurrentHashMap = new java.util.concurrent.ConcurrentHashMap<Object, Object>();
+		globalMap.put("concurrentHashMap", concurrentHashMap);
+
+		long startUsedMemory = Runtime.getRuntime().totalMemory()
+				- Runtime.getRuntime().freeMemory();
+		long endUsedMemory = 0;
+		long end = 0;
+
+		startTime = System.currentTimeMillis();
+
+		this.globalResumeTicket = true;// to run tPreJob
+
+		this.globalResumeTicket = false;// to run others jobs
+
+		try {
+			errorCode = null;
+			tFileInputDelimited_1Process(globalMap);
+			if (!"failure".equals(status)) {
+				status = "end";
+			}
+		} catch (TalendException e_tFileInputDelimited_1) {
+			globalMap.put("tFileInputDelimited_1_SUBPROCESS_STATE", -1);
+
+			e_tFileInputDelimited_1.printStackTrace();
+
+		}
+
+		this.globalResumeTicket = true;// to run tPostJob
+
+		end = System.currentTimeMillis();
+
+		if (watch) {
+			System.out.println((end - startTime) + " milliseconds");
+		}
+
+		endUsedMemory = Runtime.getRuntime().totalMemory()
+				- Runtime.getRuntime().freeMemory();
+		if (false) {
+			System.out
+					.println((endUsedMemory - startUsedMemory)
+							+ " bytes memory increase when running : Test_AddressValidationJob");
+		}
+
+		if (execStat) {
+			runStat.updateStatOnJob(RunStat.JOBEND, fatherNode);
+			runStat.stopThreadStat();
+		}
+		int returnCode = 0;
+		if (errorCode == null) {
+			returnCode = status != null && status.equals("failure") ? 1 : 0;
+		} else {
+			returnCode = errorCode.intValue();
+		}
+		resumeUtil.addLog("JOB_ENDED", "JOB:" + jobName, parent_part_launcher,
+				Thread.currentThread().getId() + "", "", "" + returnCode, "",
+				"", "");
+
+		return returnCode;
+
+	}
+
+	// only for OSGi env
+	public void destroy() {
+
+	}
+
+	private java.util.Map<String, Object> getSharedConnections4REST() {
+		java.util.Map<String, Object> connections = new java.util.HashMap<String, Object>();
+
+		return connections;
+	}
+
+	private void evalParam(String arg) {
+		if (arg.startsWith("--resuming_logs_dir_path")) {
+			resuming_logs_dir_path = arg.substring(25);
+		} else if (arg.startsWith("--resuming_checkpoint_path")) {
+			resuming_checkpoint_path = arg.substring(27);
+		} else if (arg.startsWith("--parent_part_launcher")) {
+			parent_part_launcher = arg.substring(23);
+		} else if (arg.startsWith("--watch")) {
+			watch = true;
+		} else if (arg.startsWith("--stat_port=")) {
+			String portStatsStr = arg.substring(12);
+			if (portStatsStr != null && !portStatsStr.equals("null")) {
+				portStats = Integer.parseInt(portStatsStr);
+			}
+		} else if (arg.startsWith("--trace_port=")) {
+			portTraces = Integer.parseInt(arg.substring(13));
+		} else if (arg.startsWith("--client_host=")) {
+			clientHost = arg.substring(14);
+		} else if (arg.startsWith("--context=")) {
+			contextStr = arg.substring(10);
+			isDefaultContext = false;
+		} else if (arg.startsWith("--father_pid=")) {
+			fatherPid = arg.substring(13);
+		} else if (arg.startsWith("--root_pid=")) {
+			rootPid = arg.substring(11);
+		} else if (arg.startsWith("--father_node=")) {
+			fatherNode = arg.substring(14);
+		} else if (arg.startsWith("--pid=")) {
+			pid = arg.substring(6);
+		} else if (arg.startsWith("--context_type")) {
+			String keyValue = arg.substring(15);
+			int index = -1;
+			if (keyValue != null && (index = keyValue.indexOf('=')) > -1) {
+				if (fatherPid == null) {
+					context_param.setContextType(keyValue.substring(0, index),
+							replaceEscapeChars(keyValue.substring(index + 1)));
+				} else { // the subjob won't escape the especial chars
+					context_param.setContextType(keyValue.substring(0, index),
+							keyValue.substring(index + 1));
+				}
+
+			}
+
+		} else if (arg.startsWith("--context_param")) {
+			String keyValue = arg.substring(16);
+			int index = -1;
+			if (keyValue != null && (index = keyValue.indexOf('=')) > -1) {
+				if (fatherPid == null) {
+					context_param.put(keyValue.substring(0, index),
+							replaceEscapeChars(keyValue.substring(index + 1)));
+				} else { // the subjob won't escape the especial chars
+					context_param.put(keyValue.substring(0, index),
+							keyValue.substring(index + 1));
+				}
+			}
+		} else if (arg.startsWith("--log4jLevel=")) {
+			log4jLevel = arg.substring(13);
+		}
+
+	}
+
+	private static final String NULL_VALUE_EXPRESSION_IN_COMMAND_STRING_FOR_CHILD_JOB_ONLY = "<TALEND_NULL>";
+
+	private final String[][] escapeChars = { { "\\\\", "\\" }, { "\\n", "\n" },
+			{ "\\'", "\'" }, { "\\r", "\r" }, { "\\f", "\f" }, { "\\b", "\b" },
+			{ "\\t", "\t" } };
+
+	private String replaceEscapeChars(String keyValue) {
+
+		if (keyValue == null || ("").equals(keyValue.trim())) {
+			return keyValue;
+		}
+
+		StringBuilder result = new StringBuilder();
+		int currIndex = 0;
+		while (currIndex < keyValue.length()) {
+			int index = -1;
+			// judege if the left string includes escape chars
+			for (String[] strArray : escapeChars) {
+				index = keyValue.indexOf(strArray[0], currIndex);
+				if (index >= 0) {
+
+					result.append(keyValue.substring(currIndex,
+							index + strArray[0].length()).replace(strArray[0],
+							strArray[1]));
+					currIndex = index + strArray[0].length();
+					break;
+				}
+			}
+			// if the left string doesn't include escape chars, append the left
+			// into the result
+			if (index < 0) {
+				result.append(keyValue.substring(currIndex));
+				currIndex = currIndex + keyValue.length();
+			}
+		}
+
+		return result.toString();
+	}
+
+	public Integer getErrorCode() {
+		return errorCode;
+	}
+
+	public String getStatus() {
+		return status;
+	}
+
+	ResumeUtil resumeUtil = null;
+}
+/************************************************************************************************
+ * 72623 characters generated by Talend Data Fabric on the 04 September 2018
+ * 11:28:12 BST
+ ************************************************************************************************/
